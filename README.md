@@ -1,0 +1,1 @@
+# eks-karpenter-warm-node-pool
