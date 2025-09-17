@@ -1,0 +1,31 @@
+# This file contains the values for the place-warmer deployment.
+# You can modify these values to configure the deployment.
+
+# Change the number of replicas
+- op: replace
+  path: /spec/replicas
+  value: 2 # Set desired replica count
+
+# Change the container image to a pause image
+- op: replace
+  path: /spec/template/spec/containers/0/image
+  value: registry.k8s.io/pause:3.9
+
+# Change the application label for podAntiAffinity
+- op: replace
+  path: /spec/template/spec/affinity/podAntiAffinity/requiredDuringSchedulingIgnoredDuringExecution/1/labelSelector/matchExpressions/0/values/0
+  value: my-app # Set a common label for your applications
+
+# Change resource requests and limits
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/cpu
+  value: "500m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/memory
+  value: "1Gi"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/cpu
+  value: "500m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/memory
+  value: "1Gi"

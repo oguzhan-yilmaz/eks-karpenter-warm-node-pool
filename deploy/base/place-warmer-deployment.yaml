@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: place-warmer-deployment
+  labels:
+    app: place-warmer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: place-warmer
+  template:
+    metadata:
+      labels:
+        app: place-warmer
+    spec:
+      priorityClassName: low-priority
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: warm-pool
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - place-warmer
+            topologyKey: "kubernetes.io/hostname"
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - nginx # HERE IMPORTANT 
+                # todo: must be a common label for all apps
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: nginx
+        image: nginx:latest  # TODO: use pause image
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi" 
